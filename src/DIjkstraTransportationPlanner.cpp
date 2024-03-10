@@ -34,7 +34,7 @@ struct CDijkstraTransportationPlanner::SImplementation {
         }
     }
     
-    std::size_t NodeCount() const noexcept {
+    std::size_t NodeCount() const noexcept{
         return DStreetMap->NodeCount();
     }
 
@@ -42,15 +42,30 @@ struct CDijkstraTransportationPlanner::SImplementation {
 
     }
 
-    double FindShortestPath() {
+    double FindShortestPath(TNodeID src, TNodeID dest, std::vector< TNodeID > &path) {
         std::vector <CPathRouter::TVertexID> ShortestPath;
         auto SourceVertexID = DNodeToVertexID[src];
         auto DestinationNodeID = DNodeToVertexID[dest];
-        auto Distance = DShortestPathRouter.FindShortestPath(SourceVertexID, DestinationVertexID, ShortestPath);
+        auto Distance = DShortestPathRouter.FindShortestPath(SourceVertexID, DestinationNodeID, ShortestPath);
         path.clear();
         for (auto VertexID : ShortestPath) {
-            path.push_back(std::any_cast<TNodeID>(.GetVertexTag(VertexID))
+            path.push_back(std::any_cast<TNodeID>(DShortestPathRouter.GetVertexTag(VertexID)));
         }
+        return Distance;
     }
 
+    double FindFastestPath(TNodeID src, TNodeID dest, std::vector< TTripStep > &path) {
+
+    }
+    bool GetPathDescription(const std::vector< TTripStep > &path, std::vector<std::string > &desc) const 
+    {
+
+    }
 };
+CDijkstraTransportationPlanner::CDijkstraTransportationPlanner(std::shared_ptr<SConfiguration> config) {
+    DImplementation = std::make_unique<SImplementation>(config);
+}
+
+CDijkstraTransportationPlanner::~CDijkstraTransportationPlanner() {
+
+}
