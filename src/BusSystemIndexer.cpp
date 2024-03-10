@@ -26,6 +26,8 @@ struct CBusSystemIndexer::SImplementation{
     std::shared_ptr<CBusSystem> DBusSystem;
     //Represents the stops in the system in sorted manner
     std::vector<std::shared_ptr<SStop>> DSortedStops;
+    //Represent the roues in a sorted order
+    std::vector<std::shared_ptr<SRoute>> DSortedRoutes;
     //Allows quickly identifying stops by their ID
     std::unordered_map< TNodeID, std::shared_ptr<SStop> > DNodeIDToStop;
     //Maps pairs of node IDsto a set of routes that connect those stops
@@ -35,6 +37,12 @@ struct CBusSystemIndexer::SImplementation{
     static bool StopIDCompare(std::shared_ptr<SStop> left, std::shared_ptr<SStop> right) {
         return left->ID() < right->ID();
     }
+
+    static bool RouteNameCompare(const std::shared_ptr<SRoute> &left, const std::shared_ptr<SRoute> &right) {
+        return left->Name() < right->Name();
+    }
+
+
     //Constructor for SImplementation
     SImplementation(std::shared_ptr<CBusSystem> bussystem) {
         //Initialize DBusSystem to the the internal bussystem pointer
@@ -51,6 +59,13 @@ struct CBusSystemIndexer::SImplementation{
         //Once the vector and map are populated, it sorts the DSortedStops using built in sort function
         std::sort(DSortedStops.begin(), DSortedStops.end(),StopIDCompare);
         //For loop to build DSrcDestToRoutes and loops through every route
+
+        //Second for loop for populating the vector of sorted routes
+        for (size_t Index = 0; Index < DBusSystem->RouteCount(); Index++) {
+            auto CurrentRoute = DBusSystem->RouteByIndex(Index);
+            DSortedRoutes.push_back(CurrentRoute);
+        }
+        std::sort(DSortedRoutes.begin(), DSortedRoutes.end(), RouteNameCompare);
         for (size_t Index = 0; Index < DBusSystem->RouteCount(); Index++) {
             //Retrieve the current route using its index
             auto CurrentRoute = DBusSystem->RouteByIndex(Index);
@@ -59,7 +74,7 @@ struct CBusSystemIndexer::SImplementation{
             for (size_t StopIndex = 1; StopIndex < CurrentRoute->StopCount(); StopIndex++) {
                 //Use the previous node ID as the source node ID
                 auto SourceNodeID = CurrentRoute->GetStopID(StopIndex-1);
-                auto DestinationNodeID = DBusSystem->StopByID(CurrentRoute->GetStopID(StopIndex-1));
+                auto DestinationNodeID = CurrentRoute->GetStopID(StopIndex);
                 //Create a pair of source and destination node IDS to use as a key for finding routes
                 auto SearchKey = std::make_pair(SourceNodeID, DestinationNodeID);
                 //Look for the key in the DSrcDestToRoutes map
@@ -68,7 +83,8 @@ struct CBusSystemIndexer::SImplementation{
                     Search->second.insert(CurrentRoute);
                 }
                 else {
-                    DSrcDestToRoutes[SearchKey] = {CurrentRoute};
+                    std::unordered_set<std::shared_ptr<SRoute>> newRouteSet = {CurrentRoute};
+                    DSrcDestToRoutes.insert({SearchKey, newRouteSet});
                 }
             }
         }
@@ -78,8 +94,8 @@ struct CBusSystemIndexer::SImplementation{
         return DBusSystem->StopCount();
     }
 
-    std::shared_ptr<SRoute> SortedRouteByIndex(std::size_t index) const noexcept {
-
+    std::size_t RouteCount() const noexcept {
+        return DBusSystem->RouteCount();
     }
     
     std::shared_ptr<SStop> StopByNodeID(TNodeID id) const noexcept {
@@ -104,12 +120,61 @@ struct CBusSystemIndexer::SImplementation{
         auto searchKey = std::make_pair(src, dest);
         return DSrcDestToRoutes.find(searchKey) != DSrcDestToRoutes.end();
     }
+
+    //Returns the SStop specified by the index where the stops are sorted by their ID,
+    //Returns null pointer if index is greater than or qual to StopCount
+    std::shared_ptr<SStop> SortedStopByIndex(std::size_t index) const noexcept {
+        if (index < DSortedStops.size()) {
+            return DSortedStops[index];
+        }
+        return nullptr;
+    }
+
+    //Returns the SRoute specified by the index where the routes are sorted by their
+    //Name, nullpointer is returned if index is greater than or equal to RouteCount
+    std::shared_ptr<SRoute> SortedRouteByIndex(std::size_t index) const noexcept {
+        if (index < DSortedRoutes.size()) {
+            return DSortedRoutes[index];
+        }
+        return nullptr;
+    }
+
+
 };
 
 CBusSystemIndexer::CBusSystemIndexer(std::shared_ptr<CBusSystem> bussystem) {
     DImplementation = std::make_unique<SImplementation>(bussystem);
 }
 
+CBusSystemIndexer::~CBusSystemIndexer() {
+
+}
+
 std::size_t CBusSystemIndexer::StopCount() const noexcept {
     return DImplementation->StopCount();
+}
+
+std::size_t CBusSystemIndexer::RouteCount() const noexcept {
+    return DImplementation->RouteCount();
+}
+
+std::shared_ptr<CBusSystemIndexer::SStop> CBusSystemIndexer::SortedStopByIndex(std::size_t index) const noexcept {
+    return DImplementation->SortedStopByIndex(index);
+}
+
+std::shared_ptr<CBusSystemIndexer::SRoute> CBusSystemIndexer::SortedRouteByIndex(std::size_t index) const noexcept {
+    return DImplementation->SortedRouteByIndex(index);
+}
+
+std::shared_ptr<CBusSystemIndexer::SStop> CBusSystemIndexer::StopByNodeID(TNodeID id) const noexcept {
+    return DImplementation->StopByNodeID(id);
+}
+
+bool CBusSystemIndexer::RoutesByNodeIDs(TNodeID src, TNodeID dest,
+std::unordered_set<std::shared_ptr<SRoute> > &routes) const noexcept {
+    return DImplementation->RouteByNodeIDs(src, dest, routes);
+}
+
+bool CBusSystemIndexer::RouteBetweenNodeIDs(TNodeID src, TNodeID dest) const noexcept {
+    return DImplementation->RouteBetweenNodeIDs(src, dest);
 }

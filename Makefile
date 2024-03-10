@@ -6,20 +6,30 @@ SRC_DIR = ./src
 OBJ_DIR = ./obj
 BIN_DIR = ./bin
 TEST_SRC_DIR = ./testsrc
+TEST_TMP_DIR = ./testtmp
 
 CXXFLAGS = -std=c++17 -I$(INC_DIR) #-Wall
 LDFLAGS = -lgtest -lgtest_main -lpthread -lexpat
 
 all: directories runtests
 
-runtests: $(BIN_DIR)/teststrutils $(BIN_DIR)/teststrdatasource $(BIN_DIR)/teststrdatasink $(BIN_DIR)/testdsv $(BIN_DIR)/testxml $(BIN_DIR)/testcsvbs $(BIN_DIR)/testosm
-	$(BIN_DIR)/teststrutils
-	$(BIN_DIR)/teststrdatasource
-	$(BIN_DIR)/teststrdatasink
-	$(BIN_DIR)/testdsv
-	$(BIN_DIR)/testxml
-	$(BIN_DIR)/testcsvbs
-	$(BIN_DIR)/testosm
+runtests: run_teststrutils run_teststrdatasource run_teststrdatasink run_testfiledatass
+
+run_teststrutils: $(BIN_DIR)/teststrutils
+	$(BIN_DIR)/teststrutils --gtest_output=xml:$(TEST_TMP_DIR)/run_teststrutils
+	mv $(TEST_TMP_DIR)/run_teststrutils run_teststrutils
+
+run_teststrdatasource: $(BIN_DIR)/teststrdatasource
+	$(BIN_DIR)/teststrdatasource --gtest_output=xml:$(TEST_TMP_DIR)/run_teststrdatasource
+	mv $(TEST_TMP_DIR)/run_teststrdatasource run_teststrdatasource
+
+run_teststrdatasink: $(BIN_DIR)/teststrdatasink
+	$(BIN_DIR)/teststrdatasink --gtest_output=xml:$(TEST_TMP_DIR)/run_teststrdatasink
+	mv $(TEST_TMP_DIR)/run_teststrdatasink run_teststrdatasink
+
+run_testfiledatass: $(BIN_DIR)/testfiledatass
+	$(BIN_DIR)/testfiledatass --gtest_otuput=xml:$(TEST_TMP_DIR)/run_testfiledatass
+	mv $(TEST_TMP_DIR)/run_testfiledatass run_testfiledatass
 
 $(OBJ_DIR)/StringUtils.o: $(SRC_DIR)/StringUtils.cpp $(INC_DIR)/StringUtils.h
 	@$(CXX) -o $(OBJ_DIR)/StringUtils.o -c $(CXXFLAGS) $(SRC_DIR)/StringUtils.cpp
@@ -92,6 +102,9 @@ $(OBJ_DIR)/OpenStreetMapTest.o: $(TEST_SRC_DIR)/OpenStreetMapTest.cpp $(INC_DIR)
 $(BIN_DIR)/testosm: $(OBJ_DIR)/OpenStreetMap.o $(OBJ_DIR)/OpenStreetMapTest.o $(OBJ_DIR)/XMLReader.o $(OBJ_DIR)/StringDataSink.o $(OBJ_DIR)/StringDataSource.o
 	@$(CXX) -o $(BIN_DIR)/testosm $(OBJ_DIR)/OpenStreetMap.o $(OBJ_DIR)/OpenStreetMapTest.o $(OBJ_DIR)/XMLReader.o $(OBJ_DIR)/StringDataSink.o $(OBJ_DIR)/StringDataSource.o $(LDFLAGS)
 
+$(BIN_DIR)/testfiledatass: $(OBJ_DIR)/FileDataSource.o $(OBJ_DIR)/FileDataSink.o $(OBJ_DIR)/FileDataFactory.o $(OBJ_DIR)/FileDataSSTest.o
+	@$(CXX) -o $(BIN_DIR)/testfiledatass $(OBJ_DIR)/FileDataSource.o $(OBJ_DIR)/FileDataSink.o $(OBJ_DIR)/FileDataFactory.o $(OBJ_DIR)/FileDataSSTest.o
+
 
 
 
@@ -99,7 +112,9 @@ $(BIN_DIR)/testosm: $(OBJ_DIR)/OpenStreetMap.o $(OBJ_DIR)/OpenStreetMapTest.o $(
 directories:
 	mkdir -p $(OBJ_DIR)
 	mkdir -p $(BIN_DIR)
+	mkdir -p $(TEST_TMP_DIR)
 
 clean:
 	rm -rf $(OBJ_DIR)
 	rm -rf $(BIN_DIR)
+	rm -rf $(TEST_TMP_DIR)
