@@ -39,18 +39,39 @@ struct CDijkstraTransportationPlanner::SImplementation {
     }
 
     std::shared_ptr<CStreetMap::SNode> SortedNodeByIndex(std::size_t index) const noexcept {
-
+        if (index <DStreetMap->NodeCount()) {
+            return DStreetMap->NodeByIndex(index);
+        }
+        return nullptr;
     }
 
-    double FindShortestPath() {
+    //Returns the distance in miles between the src and dest nodes of the 
+    //shortest path if one exists. NoPathExists is returned if no path exists.
+    //The nodes of the shortest path are filled in the path parameter
+    double FindShortestPath(TNodeID src, TNodeID dest, std::vector<TNodeID> &path) {
         std::vector <CPathRouter::TVertexID> ShortestPath;
         auto SourceVertexID = DNodeToVertexID[src];
         auto DestinationNodeID = DNodeToVertexID[dest];
-        auto Distance = DShortestPathRouter.FindShortestPath(SourceVertexID, DestinationVertexID, ShortestPath);
+        auto Distance = DShortestPathRouter.FindShortestPath(SourceVertexID, DestinationNodeID, ShortestPath);
         path.clear();
         for (auto VertexID : ShortestPath) {
-            path.push_back(std::any_cast<TNodeID>(.GetVertexTag(VertexID))
+            path.push_back(std::any_cast<TNodeID>(DShortest))
         }
+        return Distance;
+    }
+
+    // Returns the time in hours for the fastest path between the src and dest
+    // nodes of the if one exists. NoPathExists is returned if no path exists.
+    // The transportation mode and nodes of the fastest path are filled in the
+    // path parameter.
+    double FindFastestPath(TNodeID src, TNodeID dest, std::vector<TTripStep> &path) {
+
+    }
+
+    // Returns true if the path description is created. Takes the trip steps path
+    // and converts it into a human readable set of steps.
+    bool GetPathDescription(const std::vector<TTripStep> &path, std::vector<std::string> &desc) {
+
     }
 
 };
