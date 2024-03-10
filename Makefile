@@ -13,7 +13,7 @@ LDFLAGS = -lgtest -lgtest_main -lpthread -lexpat
 
 all: directories runtests
 
-runtests: run_teststrutils run_teststrdatasource run_teststrdatasink run_testfiledatass
+runtests: run_teststrutils run_teststrdatasource run_teststrdatasink run_testfiledatass run_testkml run_testcsvbsi run_testtpcl
 
 run_teststrutils: $(BIN_DIR)/teststrutils
 	$(BIN_DIR)/teststrutils --gtest_output=xml:$(TEST_TMP_DIR)/run_teststrutils
@@ -30,6 +30,10 @@ run_teststrdatasink: $(BIN_DIR)/teststrdatasink
 run_testfiledatass: $(BIN_DIR)/testfiledatass
 	$(BIN_DIR)/testfiledatass --gtest_otuput=xml:$(TEST_TMP_DIR)/run_testfiledatass
 	mv $(TEST_TMP_DIR)/run_testfiledatass run_testfiledatass
+
+run_testosm: $(BIN_DIR)/testosm
+	$(BIN_DIR)/testosm --gtest_output=xml:$(TEST_TMP_DIR)/run_testosm
+	mv $(TEST_TMP_DIR)/run_testosm run_testosm
 
 $(OBJ_DIR)/StringUtils.o: $(SRC_DIR)/StringUtils.cpp $(INC_DIR)/StringUtils.h
 	@$(CXX) -o $(OBJ_DIR)/StringUtils.o -c $(CXXFLAGS) $(SRC_DIR)/StringUtils.cpp
@@ -105,6 +109,39 @@ $(BIN_DIR)/testosm: $(OBJ_DIR)/OpenStreetMap.o $(OBJ_DIR)/OpenStreetMapTest.o $(
 $(BIN_DIR)/testfiledatass: $(OBJ_DIR)/FileDataSource.o $(OBJ_DIR)/FileDataSink.o $(OBJ_DIR)/FileDataFactory.o $(OBJ_DIR)/FileDataSSTest.o
 	@$(CXX) -o $(BIN_DIR)/testfiledatass $(OBJ_DIR)/FileDataSource.o $(OBJ_DIR)/FileDataSink.o $(OBJ_DIR)/FileDataFactory.o $(OBJ_DIR)/FileDataSSTest.o
 
+#testkml
+$(OBJ_DIR)/KMLWriter.o: $(SRC_DIR)/KMLWriter.cpp $(INC_DIR)/KMLWriter.h
+	@$(CXX) -o $(OBJ_DIR)/KMLWriter.o -c $(CXXFLAGS) $(SRC_DIR)/KMLWriter.cpp
+
+$(OBJ_DIR)/KMLTest.o: $(TEST_SRC_DIR)/KMLTest.cpp $(INC_DIR)/KMLWriter.h
+	@$(CXX) -o $(OBJ_DIR)/KMLTest.o -c $(CXXFLAGS) $(TEST_SRC_DIR)/KMLTest.cpp
+	
+$(BIN_DIR)/testkml: $(OBJ_DIR)/KMLWriter.o $(OBJ_DIR)/KMLTest.o $(OBJ_DIR)/StringUtils.o $(OBJ_DIR)/XMLWriter.o
+	@$(CXX) -o $(BIN_DIR)/testkml $(OBJ_DIR)/KMLWriter.o $(OBJ_DIR)/KMLTest.o $(OBJ_DIR)/StringUtils.o $(OBJ_DIR)/XMLWriter.o $(LDFLAGS)
+
+#testdpr
+$(OBJ_DIR)/DijkstraPathRouter.o: $(SRC_DIR)/DijkstraPathRouter.cpp $(INC_DIR)/DijkstraPathRouter.h
+	@$(CXX) -o $(OBJ_DIR)/DijkstraPathRouter.o -c $(CXXFLAGS) $(SRC_DIR)/DijkstraPathRouter.cpp
+
+$(OBJ_DIR)/DijkstraPathRouterTest.o: $(TEST_SRC_DIR)/DijkstraPathRouterTest.cpp $(INC_DIR)/DijkstraPathRouter.h
+	@$(CXXFLAGS) -o $(OBJ_DIR)/DijkstraPathRouterTest.o -c $(CXXFLAGS) $(TEST_SRC_DIR)/DijkstraPathRouterTest.cpp
+
+$(BIN_DIR)/testdpr: $(OBJ_DIR)/DijkstraPathRouter.o $(OBJ_DIR)/DijkstraPathRouterTest.o
+	@$(CXX) -o $(BIN_DIR)/testdpr $(OBJ_DIR)/DijkstraPathRouter.o $(OBJ_DIR)/DijkstraPathRouterTest.o $(LDFLAGS)
+
+#testcsvbi
+$(OBJ_DIR)/BusSystemIndexer.o: $(SRC_DIR)/BusSystemIndexer.cpp $(INC_DIR)/BusSystemIndexer.h
+	@$(CXX) -o $(OBJ_DIR)/BusSystemIndexer.o -c $(CXXFLAGS) $(SRC_DIR)/BusSystemIndexer.cpp
+
+$(OBJ_DIR)/CSVBusSystemIndexerTest.o $(TEST_SRC_DIR)/CSVBusSystemIndexerTest.cpp $(INC_DIR)/DijkstraPathRouter.h
+	@$(CXX) -o $(OBJ_DIR)/CSVBusSystemIndexerTest.o -c $(CXXFLAGS) $(TEST_SRC_DIR)/CSVBusSystemIndexerTest.cpp
+
+$(OBJ_DIR)/testcsvbi: $(OBJ_DIR)/BusSystemIndexer.o $(OBJ_DIR)/CSVBusSystemIndexerTest
+	@$(CXX) -o $(BIN_DIR)/testcsvbi $(OBJ_DIR)/BusSystemIndexer.o $(OBJ_DIR)/CSVBusSystemIndexerTest.o $(LDFLAGS)
+
+#testtpcl
+
+
 
 
 
@@ -118,3 +155,4 @@ clean:
 	rm -rf $(OBJ_DIR)
 	rm -rf $(BIN_DIR)
 	rm -rf $(TEST_TMP_DIR)
+	rm -f run_*
