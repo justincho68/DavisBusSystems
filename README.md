@@ -1,4 +1,4 @@
-# Project 2 README
+# Project 4 README
 
 Student 1: Justin Cho (920862823)
 Student 2: Rachel Lin (919418893)
@@ -11,102 +11,135 @@ This project should be functioning correctly. There are not any issues we know o
 
 ## Code References 
 * [std::map](https://cplusplus.com/reference/map/map/) We used this link when writing CSV Bus System for the routes. 
-* [How do you loop through a std::map?](https://stackoverflow.com/questions/26281979/how-do-you-loop-through-a-stdmap) We used this resource when looping through the map objects for route in CSV Bus System. 
-* [std::stoull](https://cplusplus.com/reference/string/stoull/) We used this for the stop IDs in CSV Bus System. 
+* [What is Dijkstra’s Algorithm? | Introduction to Dijkstra’s Shortest Path Algorithm](https://www.geeksforgeeks.org/introduction-to-dijkstras-shortest-path-algorithm/) We used this resource to get a deeper understanding of Dijikstra's algorithm and how it works.
+* [dijikstras algorithm for a node with no path](https://stackoverflow.com/questions/27364193/dijikstras-algorithm-for-a-node-with-no-path) We used this to understand what happens when a node has no path when using Dijkstra’s Algorithm.
 * [std::unordered_map](https://en.cppreference.com/w/cpp/container/unordered_map) We used this in the Open Street Map. 
 * [std::cerr](https://cplusplus.com/reference/iostream/cerr/) We used this to display errors. 
 * [Definitive List of Common Reasons for Segmentation Faults](https://stackoverflow.com/questions/33047452/definitive-list-of-common-reasons-for-segmentation-faults) We ran into a segfault while testing and used this as a reference to see the cause of the issue. 
 * [C++ Program to Create an Interface](https://www.geeksforgeeks.org/cpp-program-to-create-an-interface/) We used this to understand what an interface is.
-* Several OSM functions provided in discussion by Professor Nitta. 
+* Path Router and part of transportation planner provided in discussion by Professor Nitta. 
 
 ## Generative AI Use 
 We used ChatGPT for prompts 1-5.
 
 ### Prompt 1
-How to return a null pointer in c++?
+What does this error in makefile mean?:
+mv ./testtmp/run_testfiledatass run_testfiledatass
+./bin/testkml --gtest_output=xml:./testtmp/run_testkml
+make: ./bin/testkml: No such file or directory
+make: *** [Makefile:39: run_testkml] Error 127
 
 ### Response 1
-In C++, you can return a null pointer by simply using the nullptr keyword, which was introduced in C++11. nullptr is a keyword that represents a null pointer constant.
+This error typically means that the testkml binary file is not found in the ./bin/ directory.
 
-Here's an example of how to return a null pointer from a function:
-#include <iostream>
+Here's what each part of the error means:
 
-int* returnNullPointer() {
-    return nullptr;
-}
+make: ./bin/testkml: No such file or directory: This part of the error indicates that make is trying to execute ./bin/testkml (which is a binary file) but it doesn't exist in the specified directory.
 
-int main() {
-    int* ptr = returnNullPointer();
-    
-    if (ptr == nullptr) {
-        std::cout << "Pointer is null." << std::endl;
-    } else {
-        std::cout << "Pointer is not null." << std::endl;
-    }
-    
-    return 0;
-}
-In the returnNullPointer() function, we're simply returning nullptr, indicating that the function returns a null pointer. Then, in the main() function, we check if the pointer returned by returnNullPointer() is null using the nullptr keyword.
+make: *** [Makefile:39: run_testkml] Error 127: This line indicates that the error occurred in line 39 of your Makefile while executing the target run_testkml, and the error code 127 signifies that the command specified (in this case, trying to execute ./bin/testkml) was not found.
 
-Before C++11, programmers often used NULL, which is a macro defined in <cstddef> or <stddef.h>, to represent null pointers. However, nullptr is preferred in modern C++ code because it provides better type safety and readability.
+To resolve this issue, you need to make sure that the testkml binary is built and placed in the ./bin/ directory before running the make command. This might involve compiling the source code that generates testkml if it's not already built.
 
 ### Prompt 2
-The Set Attribute print statement is not being printed becuse the conditional is never entered, please tell me where specifically the issue is:
-    while (src->ReadEntity(TempEntity,true) && TempEntity.DType != SXMLEntity::EType::EndElement) {
-    //nd references to nodes and ref is a node id. These IDs will be added to the way's list of IDs
-        if (TempEntity.DNameData == "nd") {
-            TNodeID NodeID = std::stoull(TempEntity.AttributeValue("ref"));
-            NewWay->DNodeIDs.push_back(NodeID);
-            std::cout<<"Added Node ID to way:" << NodeID << std::endl;
-        }
-        //Parses through tag elements like the node parsing, adding additional attributes as it continues to parse
-        else if ((TempEntity.DType == SXMLEntity::EType::StartElement) && (TempEntity.DNameData == "tag")) {
-            std::string key = TempEntity.AttributeValue("k");
-            std::string value = TempEntity.AttributeValue("v");
-            NewWay->SetAttribute(key,value);
-            std::cout << "Set attribute for way: Key=" << key << ", Value=" << value << std::endl;
-        }
-    }
+Explain Dijkstra’s Algorithm.
 
 ### Response 2
-If the SetAttribute print statement is not being printed and the conditional for entering the block that processes <tag> elements is never met, it suggests that there might be an issue with how the conditions are evaluated or with the structure of the XML being parsed. Here are specific areas to review and fix:
+Dijkstra's Algorithm is a popular method used in computer science to find the shortest path between nodes in a graph, particularly when all edge weights are non-negative. It was developed by Dutch computer scientist Edsger W. Dijkstra in 1956.
 
-EndElement Condition for <way>: The loop condition TempEntity.DType != SXMLEntity::EType::EndElement might prematurely terminate the loop before reaching the <tag> elements if an EndElement of <nd> is encountered. Ensure that your logic only exits the loop when the EndElement for the <way> itself is reached, not an EndElement for any nested elements like <nd>. You might need a more precise way to track when you've finished processing a <way> element, possibly by tracking nested levels or by setting a flag when entering and exiting <way> elements.
+Here's a step-by-step explanation of how Dijkstra's Algorithm works:
 
-StartElement Condition for <tag>: Double-check that the condition TempEntity.DType == SXMLEntity::EType::StartElement && TempEntity.DNameData == "tag" is correct for your XML structure. Ensure that <tag> elements are direct children of <way> elements in your XML file and that they are properly formatted. If <tag> elements are correctly formatted and positioned as children of <way>, this condition should theoretically be met.
+Initialization: Start with a source node and mark its distance as 0. Mark the distances of all other nodes as infinity (or a very large number). Keep track of the shortest distance from the source node to each node.
 
-XML Structure: Verify the XML file structure to ensure that <tag> elements are indeed present within <way> elements and correctly formatted. If the <tag> elements are somehow nested differently than expected or if there are namespaces or prefixes involved that affect the DNameData, it could prevent the condition from being met.
+Selecting the Next Node: Choose the unvisited node with the smallest known distance from the source node. This is typically implemented using a priority queue or a min-heap data structure, which efficiently keeps track of the next node to explore.
 
-Debugging: Temporarily remove the condition && TempEntity.DType != SXMLEntity::EType::EndElement and replace the else if for <tag> processing with just an if statement to force the execution into the block, then carefully monitor the output. This is not a solution but a debugging step to understand if the issue lies within the loop's exit condition or elsewhere.
+Update Distances: For the selected node, examine all of its neighboring nodes (adjacent nodes). Calculate the distance to each neighboring node by summing the distance from the source node to the current node and the distance from the current node to the neighboring node. If this distance is shorter than the previously known distance, update the distance of the neighboring node.
 
-Printing Entity Types and Names: Add debug print statements before the conditional checks within your loop to print out TempEntity.DType and TempEntity.DNameData for every entity read. This can help identify if and when <tag> elements are being read and what might be preventing the condition from being true.
+Mark as Visited: Once all the neighbors have been examined, mark the current node as visited. This means that its shortest path from the source node has been found and it does not need to be revisited.
 
-By carefully reviewing these areas and adding strategic debug print statements, you should be able to pinpoint why the loop for processing <tag> elements is not being entered and adjust your conditions accordingly.
+Repeat: Repeat steps 2 to 4 until all nodes have been visited. At each iteration, select the unvisited node with the smallest known distance from the source node and explore its neighbors.
+
+Termination: The algorithm terminates when all nodes have been visited or when the destination node has been visited (if a destination node was specified). At this point, the shortest path from the source node to every other node (or the destination node) has been found.
+
+Once Dijkstra's Algorithm terminates, you can reconstruct the shortest path from the source node to any other node by following the recorded shortest distances and predecessors from the source node.
+
+It's worth noting that Dijkstra's Algorithm guarantees finding the shortest path in a graph with non-negative edge weights, but it does not work correctly for graphs with negative edge weights. For graphs with negative edge weights, algorithms like the Bellman-Ford Algorithm are more appropriate.
 
 ### Prompt 3
-What does error 1 makefile mean?
+When would no path exist in Dijkstra's algorithm?
 
 ### Response 3
 
-Error 1 in a Makefile typically means that the make process encountered an error while trying to execute a specific rule or command. This error message is generated by the make utility when a command within the Makefile fails to execute properly.
+Dijkstra's algorithm is a method used to find the shortest path between nodes in a graph, given a starting node. It works for graphs with non-negative edge weights. If you're encountering a situation where Dijkstra's algorithm is indicating that no path exists between two nodes, there are several possible reasons:
 
-Here's an example of how an error might be displayed:
-make: *** [target_name] Error 1
+Disconnected Nodes: The nodes you're trying to find a path between might be in different connected components of the graph. In this case, there truly is no path between them.
 
-In this message:
-make indicates that the error occurred during the execution of the make command.
-target_name refers to the target in the Makefile where the error occurred.
-To diagnose the issue, you would need to examine the specific rule or command associated with the target mentioned in the error message. Check for typos, missing dependencies, incorrect file paths, or any other issues that might be causing the command to fail. Additionally, you can inspect any error messages or output generated by the failed command to understand the nature of the problem.
+Negative Edge Weights: Dijkstra's algorithm assumes that all edge weights are non-negative. If your graph contains negative edge weights, Dijkstra's algorithm may not give correct results. In such cases, you might consider using algorithms like Bellman-Ford.
+
+Incorrect Input: Ensure that the input to the algorithm is correct. If there's an error in specifying the nodes or edges, it could lead to unexpected behavior.
+
+Node or Edge Missing: Check if the nodes or edges you're considering actually exist in the graph. It's possible that there's a typo or mistake in specifying the graph structure.
+
+Algorithm Implementation Error: If you've implemented the algorithm yourself, double-check your implementation for bugs. Even small errors can lead to incorrect results.
+
+Unreachable Node: One of the nodes might be unreachable from the other due to the directionality or structure of the graph.
+
+To resolve the issue, carefully review your graph structure and the inputs to Dijkstra's algorithm to ensure they are correct. If you're still unable to identify the problem, consider providing more details about your specific scenario for further assistance.
 
 ### Prompt 4
-What is a segmentation fault?
+What are different ways to loop through objects in a vector in a for loop?
 
 ### Response 4
-A segmentation fault, often abbreviated as segfault, is a specific kind of error that occurs in a program when it tries to access a memory location that it doesn't have permission to access. This typically happens when a program tries to access memory that is outside of its address space, or when it tries to access memory that has been deallocated or otherwise invalidated.
+In C++, if you have a vector of objects and you want to loop through each object using a for loop, there are several ways you can accomplish this:
 
-Segmentation faults are a common type of bug in programming, especially in languages like C and C++ where programmers have direct control over memory management. They often occur due to errors such as dereferencing a null pointer, accessing an array element outside of its bounds, or attempting to write to read-only memory.
+Using a traditional for loop:
+This is the most basic way to iterate through a vector using indices.
+#include <vector>
 
-When a segmentation fault occurs, the operating system typically terminates the offending program and may generate a core dump or other diagnostic information to help programmers debug the issue. Fixing segmentation faults usually involves careful examination of the code to identify and correct the memory access errors that caused the fault.
+// Assuming we have a vector of objects of type T
+std::vector<T> objects;
+
+// Loop through the vector using a traditional for loop
+for (size_t i = 0; i < objects.size(); ++i) {
+    // Access each object using the index i
+    // objects[i].someMethod();
+}
+Using a range-based for loop:
+This method simplifies the code and makes it more readable.
+#include <vector>
+
+// Assuming we have a vector of objects of type T
+std::vector<T> objects;
+
+// Loop through the vector using a range-based for loop
+for (const auto& obj : objects) {
+    // Access each object directly as obj
+    // obj.someMethod();
+}
+Using iterators:
+Iterators offer flexibility and can be used to traverse through the vector.
+#include <vector>
+
+// Assuming we have a vector of objects of type T
+std::vector<T> objects;
+
+// Loop through the vector using iterators
+for (auto it = objects.begin(); it != objects.end(); ++it) {
+    // Access each object using the iterator *it
+    // (*it).someMethod();
+}
+Using reverse iterators:
+If you need to traverse the vector in reverse order, you can use reverse iterators.
+#include <vector>
+
+// Assuming we have a vector of objects of type T
+std::vector<T> objects;
+
+// Loop through the vector in reverse using reverse iterators
+for (auto it = objects.rbegin(); it != objects.rend(); ++it) {
+    // Access each object in reverse order using the iterator *it
+    // (*it).someMethod();
+}
+These are the common ways to loop through objects in a vector using a for loop in C++. Choose the one that best fits your requirements and coding style.
 
 ### Prompt 5
 What are the differences between a .h file and an abstract interface file in c++?

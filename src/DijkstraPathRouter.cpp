@@ -2,14 +2,13 @@
 #include <algorithm>
 
 struct CDijkstraPathRouter::SImplementation {
+    //T for type
+    using TEdge = std::pair<double, TVertexID>;
+
     struct SVertex {
-        //T for type
-        using TEdge = std::pair<double, TVertexID>;
-
-
         std::any DTag;
         //All edges need weight and destination
-        std::vector<SEdge> DEdges;
+        std::vector<TEdge> DEdges;
     };
 
     std::vector <SVertex> DVertices;
@@ -33,10 +32,10 @@ struct CDijkstraPathRouter::SImplementation {
 
     bool AddEdge(TVertexID src, TVertexID dest, double weight, bool bidir = false) noexcept {
         //make sure source and destination are valid
-        if (src < DVertices.size() && dest < DVertices.size() && (0.0 <= weight)) {
-            DVertices[src].push_back(std::make_pair(weight,dest));
+        if ((src < DVertices.size()) && (dest < DVertices.size()) && (0.0 <= weight)) {
+            DVertices[src].DEdges.push_back(std::make_pair(weight,dest));
             if (bidir) {
-                DVertices[src].push_back(std::make_pair(weight,src));
+                DVertices[src].DEdges.push_back(std::make_pair(weight,src));
             }
             return true;
         }
@@ -94,7 +93,8 @@ struct CDijkstraPathRouter::SImplementation {
             dest = Previous[dest];
             path.push_back(dest);
         }while (dest != src);
-        //NOT DONE
+        std::reverse(path.begin(), path.end());
+        return PathDistance;
         //while loop going from destination node back to source node 
 
     }
