@@ -76,12 +76,12 @@ bool CTransportationPlannerCommandLine::SImplementation::ProcessCommands() {
         else if (command == "count") {
             auto count = Planner->NodeCount();
             std::stringstream output;
-            output <<'> '<< count << "nodes\n";
+            output <<"> "<< count << "nodes\n";
             SendData(OutSink, std::to_string(count) + " nodes\n");
         }
         else if (command == "node") {
             std::size_t index;
-            if (!(command >> index)) {
+            if (!(commandStream >> index)) {
                 SendData(ErrSink, "Invalid node command, see help. \n");
             } else {
                 auto node = Planner->SortedNodeByIndex(index);
