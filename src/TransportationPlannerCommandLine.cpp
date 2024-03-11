@@ -81,9 +81,10 @@ bool CTransportationPlannerCommandLine::SImplementation::ProcessCommands() {
         }
         else if (command == "node") {
             std::size_t index;
-            if (!(command >> index)) {
+            if (!(command.size() > index)) {
                 SendData(ErrSink, "Invalid node command, see help. \n");
-            } else {
+            } 
+            else {
                 auto node = Planner->SortedNodeByIndex(index);
                 if (node) {
                     auto location = node->Location();
@@ -166,4 +167,12 @@ bool CTransportationPlannerCommandLine::SImplementation::ProcessCommands() {
         }
     }
     return false;
+}
+CTransportationPlannerCommandLine::CTransportationPlannerCommandLine(std::shared_ptr<CDataSource> cmdsrc, std::shared_ptr<CDataSink> outsink, std::shared_ptr<CDataSink> errsink, std::shared_ptr<CDataFactory> results, std::shared_ptr<CTransportationPlanner> planner)
+{
+    DImplementation = std::make_unique<SImplementation>(cmdsrc,outsink,errsink,results,planner);
+}
+
+CTransportationPlannerCommandLine::~CTransportationPlannerCommandLine() {
+
 }
