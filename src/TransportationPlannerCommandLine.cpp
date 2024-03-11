@@ -7,6 +7,7 @@
 #include "TransportationPlanner.h"
 #include <iostream>
 #include <sstream>
+#include <iomanip>
 
 class CTransportationPlannerCommandLine::SImplementation {
     public:
@@ -71,13 +72,13 @@ bool CTransportationPlannerCommandLine::SImplementation::ProcessCommands() {
                 "save     Saves the last calculated path to file\n"
                 "print    Prints the steps for the last calculated path\n"
                 "------------------------------------------------------------------------\n";
-                SendData(OutSink, helpText);
+                SendData(OutSink, "> " + helpText);
         }
         else if (command == "count") {
             auto count = Planner->NodeCount();
             std::stringstream output;
-            output <<"> "<< count << "nodes\n";
-            SendData(OutSink, std::to_string(count) + " nodes\n");
+            output << count << " nodes\n";
+            SendData(OutSink, "> " + output.str());
         }
         else if (command == "node") {
             std::size_t index;
@@ -87,11 +88,26 @@ bool CTransportationPlannerCommandLine::SImplementation::ProcessCommands() {
             else {
                 auto node = Planner->SortedNodeByIndex(index);
                 if (node) {
+                    auto id = node->ID();
                     auto location = node->Location();
-                    double latitude = location.first;
-                    double longitude = location.second;
                     std::stringstream nodeInfo;
-                    nodeInfo << "> Node" << index << ": id = " << node->ID() << " is at latitude " << latitude << ", longitude " << longitude << "\n>";
+                    auto [latitude, longitude] = location;
+                    int latDeg, latMin, longDeg, longMin;
+                    double latSec, longSec;
+                    std::string latDir = latitude >= 0 ? "N" : "S", longDir = longitude >= 0 ? "E" : "W";
+                    latitude = std::abs(latitude);
+                    longitude = std::abs(longitude);
+                    latDeg = static_cast<int>(latitude);
+                    longDeg = static_cast<int>(longitude);
+                    latitude = (latitude - latDeg) * 60;
+                    longitude = (longitude - longDeg) * 60;
+                    latMin = static_cast<int>(latitude);
+                    longMin = static_cast<int>(longitude);
+                    latSec = (latitude - latMin) * 60;
+                    longSec = (longitude - longMin) * 60;
+                    nodeInfo << "> Node " << index << ": id = " << id
+                             << " is at " << latDeg << "d " << latMin << "' " << std::fixed << std::setprecision(0) << latSec << "\" " << latDir
+                             << ", " << longDeg << "d " << longMin << "' " << std::fixed << std::setprecision(0) << longSec << "\" " << longDir << "\n";
                     SendData(OutSink, nodeInfo.str());
                 } else {
                     SendData(ErrSink, "Node index out of range. \n");
@@ -115,7 +131,7 @@ bool CTransportationPlannerCommandLine::SImplementation::ProcessCommands() {
                     result = Planner->FindFastestPath(srcID, destID, tripSteps);
                     std::vector<std::string> pathDesc;
                     if(Planner->GetPathDescription(tripSteps, pathDesc)) {
-                        output << "> Fastest path takes: " << result << " units\n";
+                        output << "> Fastest path takes " << result << " units\n";
                         for (const auto &desc : pathDesc) {
                             output << desc << "\n";
                         }
@@ -175,4 +191,8 @@ CTransportationPlannerCommandLine::CTransportationPlannerCommandLine(std::shared
 
 CTransportationPlannerCommandLine::~CTransportationPlannerCommandLine() {
 
+}
+
+bool CTransportationPlannerCommandLine::ProcessCommands() {
+    return DImplementation->ProcessCommands();
 }

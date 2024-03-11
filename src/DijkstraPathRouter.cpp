@@ -6,10 +6,6 @@ struct CDijkstraPathRouter::SImplementation {
     //T for type
     using TEdge = std::pair<double, TVertexID>;
 
-    SImplementation() {
-
-    }
-
     struct SVertex {
         std::any DTag;
         //All edges need weight and destination
@@ -113,4 +109,26 @@ CDijkstraPathRouter::~CDijkstraPathRouter() {
 
 }
 
-CDijkstraPathRoute::
+std::size_t CDijkstraPathRouter::VertexCount() const noexcept {
+    return DImplementation->VertexCount();
+}
+
+std::any CDijkstraPathRouter::GetVertexTag(TVertexID id) const noexcept {
+    return DImplementation->GetVertexTag(id);
+}
+
+bool CDijkstraPathRouter::AddEdge(TVertexID src, TVertexID dest, double weight, bool bidir) noexcept {
+    return DImplementation->AddEdge(src, dest, weight, bidir);
+}
+
+CPathRouter::TVertexID CDijkstraPathRouter::AddVertex(std::any tag) noexcept {
+    return DImplementation->AddVertex(tag);
+}
+
+bool CDijkstraPathRouter::Precompute(std::chrono::steady_clock::time_point deadline) noexcept {
+    return true;
+}
+
+double CDijkstraPathRouter::FindShortestPath(TVertexID src, TVertexID dest, std::vector<TVertexID> &path) noexcept {
+    return DImplementation->FindShortestPath(src, dest, path);
+}

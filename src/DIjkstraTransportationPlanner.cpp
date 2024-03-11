@@ -138,3 +138,24 @@ CDijkstraTransportationPlanner::CDijkstraTransportationPlanner(std::shared_ptr<S
 CDijkstraTransportationPlanner::~CDijkstraTransportationPlanner() {
 
 }
+
+bool CDijkstraTransportationPlanner::GetPathDescription(const std::vector<TTripStep> &path, std::vector<std::string> &desc) const {
+    return DImplementation->GetPathDescription(path, desc);
+}
+
+double CDijkstraTransportationPlanner::FindFastestPath(TNodeID src, TNodeID dest, std::vector<TTripStep> &path) {
+    return DImplementation->FindFastestPath(src, dest, path);
+}
+
+
+double CDijkstraTransportationPlanner::FindShortestPath(TNodeID src, TNodeID dest, std::vector<TNodeID> &path) {
+    return DImplementation->FindShortestPath(src, dest, path);
+}
+
+std::shared_ptr<CStreetMap::SNode> CDijkstraTransportationPlanner::SortedNodeByIndex(std::size_t index) const noexcept {
+    return DImplementation->SortedNodeByIndex(index);
+}
+
+std::size_t CDijkstraTransportationPlanner::NodeCount() const noexcept {
+    return DImplementation->NodeCount();
+}

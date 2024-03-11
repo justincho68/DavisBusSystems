@@ -213,8 +213,8 @@ $(OBJ_DIR)/BusSystem.o: $(SRC_DIR)/BusSystem.cpp $(INC_DIR)/BusSystem.h
 $(OBJ_DIR)/StreetMap.o: $(SRC_DIR)/StreetMap.cpp $(INC_DIR)/StreetMap.h
 	@$(CXX) -o $(OBJ_DIR)/StreetMap.o -c $(CXXFLAGS) $(SRC_DIR)/StreetMap.cpp
 
-$(BIN_DIR)/testtpcl: $(OBJ_DIR)/TransportationPlannerCommandLine.o $(OBJ_DIR)/TPCommandLineTest.o $(OBJ_DIR)/DataFactory.o $(OBJ_DIR)/DataSource.o $(OBJ_DIR)/DataSink.o $(OBJ_DIR)/BusSystem.o $(OBJ_DIR)/StreetMap.o $(OBJ_DIR)/DijkstraTransportationPlanner.o $(OBJ_DIR)/StringDataSink.o
-	@$(CXX) -o $(BIN_DIR)/testtpcl $(OBJ_DIR)/TransportationPlannerCommandLine.o $(OBJ_DIR)/TPCommandLineTest.o $(OBJ_DIR)/DataFactory.o $(OBJ_DIR)/DataSource.o $(OBJ_DIR)/DataSink.o $(OBJ_DIR)/BusSystem.o $(OBJ_DIR)/StreetMap.o $(OBJ_DIR)/DijkstraTransportationPlanner.o $(OBJ_DIR)/StringDataSink.o $(LDFLAGS)
+$(BIN_DIR)/testtpcl: $(OBJ_DIR)/TransportationPlannerCommandLine.o $(OBJ_DIR)/TPCommandLineTest.o $(OBJ_DIR)/DataFactory.o $(OBJ_DIR)/DataSource.o $(OBJ_DIR)/DataSink.o $(OBJ_DIR)/BusSystem.o $(OBJ_DIR)/StreetMap.o $(OBJ_DIR)/DijkstraTransportationPlanner.o $(OBJ_DIR)/DijkstraPathRouter.o $(OBJ_DIR)/StringDataSink.o $(OBJ_DIR)/StringDataSource.o $(OBJ_DIR)/GeographicUtils.o $(OBJ_DIR)/BusSystemIndexer.o
+	@$(CXX) -o $(BIN_DIR)/testtpcl $(OBJ_DIR)/TransportationPlannerCommandLine.o $(OBJ_DIR)/TPCommandLineTest.o $(OBJ_DIR)/DataFactory.o $(OBJ_DIR)/DataSource.o $(OBJ_DIR)/DataSink.o $(OBJ_DIR)/BusSystem.o $(OBJ_DIR)/StreetMap.o $(OBJ_DIR)/DijkstraTransportationPlanner.o $(OBJ_DIR)/DijkstraPathRouter.o $(OBJ_DIR)/StringDataSink.o $(OBJ_DIR)/StringDataSource.o $(OBJ_DIR)/GeographicUtils.o $(OBJ_DIR)/BusSystemIndexer.o $(LDFLAGS)
 
 directories:
 	mkdir -p $(OBJ_DIR)
