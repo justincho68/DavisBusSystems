@@ -1,9 +1,14 @@
 #include "DijkstraPathRouter.h"
 #include <algorithm>
+#include "PathRouter.h"
 
 struct CDijkstraPathRouter::SImplementation {
     //T for type
     using TEdge = std::pair<double, TVertexID>;
+
+    SImplementation() {
+
+    }
 
     struct SVertex {
         std::any DTag;
@@ -107,3 +112,5 @@ CDijkstraPathRouter::CDijkstraPathRouter() {
 CDijkstraPathRouter::~CDijkstraPathRouter() {
 
 }
+
+CDijkstraPathRoute::

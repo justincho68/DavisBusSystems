@@ -1,5 +1,5 @@
-#include "DijkstraTransportationPlanner.h"
 #include "DijkstraPathRouter.h"
+#include "DijkstraTransportationPlanner.h"
 #include "TransportationPlannerConfig.h"
 #include "GeographicUtils.h"
 #include "BusSystemIndexer.h"
@@ -136,10 +136,5 @@ CDijkstraTransportationPlanner::CDijkstraTransportationPlanner(std::shared_ptr<S
 }
 
 CDijkstraTransportationPlanner::~CDijkstraTransportationPlanner() {
-
-}
-
-
-CDijkstraPathRouter::~CDijkstraPathRouter() {
 
 }

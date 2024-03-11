@@ -13,7 +13,7 @@ LDFLAGS = -lgtest -lgtest_main -lpthread -lexpat -lgmock
 
 all: directories runtests
 
-runtests: run_teststrutils run_teststrdatasource run_teststrdatasink run_testfiledatass run_testkml run_testcsvbsi run_testtpcl run_testdpr run_testtp
+runtests: run_teststrutils run_teststrdatasource run_teststrdatasink run_testfiledatass run_testosm run_testkml run_testtpcl run_testtp run_testdpr run_testcsvbsi
 
 run_teststrutils: $(BIN_DIR)/teststrutils
 	$(BIN_DIR)/teststrutils --gtest_output=xml:$(TEST_TMP_DIR)/run_teststrutils
@@ -158,8 +158,11 @@ $(BIN_DIR)/testkml: $(OBJ_DIR)/KMLWriter.o $(OBJ_DIR)/KMLTest.o $(OBJ_DIR)/Strin
 $(OBJ_DIR)/DijkstraPathRouter.o: $(SRC_DIR)/DijkstraPathRouter.cpp $(INC_DIR)/DijkstraPathRouter.h
 	@$(CXX) -o $(OBJ_DIR)/DijkstraPathRouter.o -c $(CXXFLAGS) $(SRC_DIR)/DijkstraPathRouter.cpp
 
-$(OBJ_DIR)/DijkstraPathRouterTest.o: $(TEST_SRC_DIR)/DijkstraTest.cpp $(INC_DIR)/DijkstraPathRouter.h
-	@$(CXX) -o $(OBJ_DIR)/DijkstraTest.o -c $(CXXFLAGS) $(TEST_SRC_DIR)/DijkstraPathRouterTest.cpp
+$(OBJ_DIR)/DijkstraTest.o: $(TEST_SRC_DIR)/DijkstraTest.cpp $(INC_DIR)/DijkstraPathRouter.h
+	@$(CXX) -o $(OBJ_DIR)/DijkstraTest.o -c $(CXXFLAGS) $(TEST_SRC_DIR)/DijkstraTest.cpp
+
+#$(OBJ_DIR)/PathRouter.o: $(SRC_DIR)/DijkstraPathRouter.cpp $(INC_DIR)/PathRouter.h
+#	@$(CXX) -o $(OBJ_DIR)/PathRouter.o -c $(CXXFLAGS) $(SRC_DIR)/DijkstraPathRouter.cpp
 
 $(BIN_DIR)/testdpr: $(OBJ_DIR)/DijkstraPathRouter.o $(OBJ_DIR)/DijkstraTest.o
 	@$(CXX) -o $(BIN_DIR)/testdpr $(OBJ_DIR)/DijkstraPathRouter.o $(OBJ_DIR)/DijkstraTest.o $(LDFLAGS)
@@ -175,7 +178,7 @@ $(BIN_DIR)/testcsvbsi: $(OBJ_DIR)/BusSystemIndexer.o $(OBJ_DIR)/CSVBusSystemInde
 	@$(CXX) -o $(BIN_DIR)/testcsvbsi $(OBJ_DIR)/BusSystemIndexer.o $(OBJ_DIR)/CSVBusSystemIndexerTest.o $(OBJ_DIR)/DSVReader.o $(OBJ_DIR)/StringDataSource.o $(OBJ_DIR)/CSVBusSystem.o $(LDFLAGS)
 
 #testtp
-$(OBJ_DIR)/DijkstraTransportationPlanner.o: $(SRC_DIR)/DijkstraTransportationPlanner.cpp $(INC_DIR)/DijkstraTransportationPlanner.h 
+$(OBJ_DIR)/DijkstraTransportationPlanner.o: $(SRC_DIR)/DijkstraTransportationPlanner.cpp $(INC_DIR)/DijkstraTransportationPlanner.h $(INC_DIR)/DijkstraPathRouter.h
 	@$(CXX) -o $(OBJ_DIR)/DijkstraTransportationPlanner.o -c $(CXXFLAGS) $(SRC_DIR)/DijkstraTransportationPlanner.cpp
 
 $(OBJ_DIR)/CSVOSMTransportationPlannerTest.o: $(TEST_SRC_DIR)/CSVOSMTransportationPlannerTest.cpp $(INC_DIR)/DijkstraTransportationPlanner.h
@@ -184,7 +187,7 @@ $(OBJ_DIR)/CSVOSMTransportationPlannerTest.o: $(TEST_SRC_DIR)/CSVOSMTransportati
 $(OBJ_DIR)/GeographicUtils.o: $(SRC_DIR)/GeographicUtils.cpp $(INC_DIR)/GeographicUtils.h
 	@$(CXX) -o $(OBJ_DIR)/GeographicUtils.o -c $(CXXFLAGS) $(SRC_DIR)/GeographicUtils.cpp
 
-$(BIN_DIR)/testtp: $(OBJ_DIR)/DijkstraTransportationPlanner.o $(OBJ_DIR)/CSVOSMTransportationPlannerTest.o 
+$(BIN_DIR)/testtp: $(OBJ_DIR)/DijkstraTransportationPlanner.o $(OBJ_DIR)/CSVOSMTransportationPlannerTest.o $(OBJ_DIR)/GeographicUtils.o $(OBJ_DIR)/DijkstraPathRouter.o $(OBJ_DIR)/BusSystemIndexer.o
 	@$(CXX) -o $(BIN_DIR)/testtp $(OBJ_DIR)/DijkstraTransportationPlanner.o $(OBJ_DIR)/CSVOSMTransportationPlannerTest.o $(OBJ_DIR)/GeographicUtils.o $(OBJ_DIR)/DijkstraPathRouter.o $(OBJ_DIR)/BusSystemIndexer.o $(LDFLAGS)
 
 #testtpcl
@@ -210,8 +213,8 @@ $(OBJ_DIR)/BusSystem.o: $(SRC_DIR)/BusSystem.cpp $(INC_DIR)/BusSystem.h
 $(OBJ_DIR)/StreetMap.o: $(SRC_DIR)/StreetMap.cpp $(INC_DIR)/StreetMap.h
 	@$(CXX) -o $(OBJ_DIR)/StreetMap.o -c $(CXXFLAGS) $(SRC_DIR)/StreetMap.cpp
 
-$(BIN_DIR)/testtpcl: $(OBJ_DIR)/TransportationPlannerCommandLine.o $(OBJ_DIR)/TPCommandLineTest.o $(OBJ_DIR)/DataFactory.o $(OBJ_DIR)/DataSource.o $(OBJ_DIR)/DataSink.o $(OBJ_DIR)/BusSystem.o $(OBJ_DIR)/StreetMap.o $(OBJ_DIR)/DijkstraTransportationPlanner.o
-	@$(CXX) -o $(BIN_DIR)/testtpcl $(OBJ_DIR)/TransportationPlannerCommandLine.o $(OBJ_DIR)/TPCommandLineTest.o $(OBJ_DIR)/DataFactory.o $(OBJ_DIR)/DataSource.o $(OBJ_DIR)/DataSink.o $(OBJ_DIR)/BusSystem.o $(OBJ_DIR)/StreetMap.o $(OBJ_DIR)/DijkstraTransportationPlanner.o $(LDFLAGS)
+$(BIN_DIR)/testtpcl: $(OBJ_DIR)/TransportationPlannerCommandLine.o $(OBJ_DIR)/TPCommandLineTest.o $(OBJ_DIR)/DataFactory.o $(OBJ_DIR)/DataSource.o $(OBJ_DIR)/DataSink.o $(OBJ_DIR)/BusSystem.o $(OBJ_DIR)/StreetMap.o $(OBJ_DIR)/DijkstraTransportationPlanner.o $(OBJ_DIR)/StringDataSink.o
+	@$(CXX) -o $(BIN_DIR)/testtpcl $(OBJ_DIR)/TransportationPlannerCommandLine.o $(OBJ_DIR)/TPCommandLineTest.o $(OBJ_DIR)/DataFactory.o $(OBJ_DIR)/DataSource.o $(OBJ_DIR)/DataSink.o $(OBJ_DIR)/BusSystem.o $(OBJ_DIR)/StreetMap.o $(OBJ_DIR)/DijkstraTransportationPlanner.o $(OBJ_DIR)/StringDataSink.o $(LDFLAGS)
 
 directories:
 	mkdir -p $(OBJ_DIR)
