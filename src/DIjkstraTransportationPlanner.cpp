@@ -99,14 +99,20 @@ struct CDijkstraTransportationPlanner::SImplementation {
     // The transportation mode and nodes of the fastest path are filled in the
     // path parameter.
     double FindFastestPath(TNodeID src, TNodeID dest, std::vector<TTripStep> &path) {
-        std::vector <CPathRouter::TVertexID> BikeFastestPath;
-        std::vector <CPathRouter::TVertexID> WalkBusFastestPath;
         auto SourceVertexID = DNodeToVertexID[src];
         auto DestinationVertexID = DNodeToVertexID[dest];
+        auto Bike = CTransportationPlanner::ETransportationMode::Bike;
+        std::vector <CPathRouter::TVertexID> BikeFastestPath;
         auto BikeFastestPathTime = DFastestPathRouterBike.FindShortestPath(SourceVertexID, DestinationVertexID, BikeFastestPath);
+        std::vector <CPathRouter::TVertexID> WalkBusFastestPath;
         auto WalkBusFastestPathTime = DFastestPathRouterWalkBus.FindShortestPath(SourceVertexID, DestinationVertexID, BikeFastestPath);
+        path.clear();
         if (BikeFastestPathTime < WalkBusFastestPathTime)
         {
+            for (auto VertexID : BikeFastestPath) 
+            {
+                path.push_back(std::make_pair(Bike, DNodeToVertexID.find(VertexID)->second));
+            }
             return BikeFastestPathTime;
         }
         else if (WalkBusFastestPathTime < BikeFastestPathTime)
@@ -130,5 +136,10 @@ CDijkstraTransportationPlanner::CDijkstraTransportationPlanner(std::shared_ptr<S
 }
 
 CDijkstraTransportationPlanner::~CDijkstraTransportationPlanner() {
+
+}
+
+
+CDijkstraPathRouter::~CDijkstraPathRouter() {
 
 }

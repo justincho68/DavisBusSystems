@@ -10,12 +10,12 @@ The current status of this project is completed.
 This project should be functioning correctly. There are not any issues we know of.
 
 ## Code References 
-* [std::map](https://cplusplus.com/reference/map/map/) We used this link when writing CSV Bus System for the routes. 
+* [std::make_pair](https://cplusplus.com/reference/utility/make_pair/) We used this link when writing the FastestPath for Transportation Planner for the TTripStep vector.
 * [What is Dijkstra’s Algorithm? | Introduction to Dijkstra’s Shortest Path Algorithm](https://www.geeksforgeeks.org/introduction-to-dijkstras-shortest-path-algorithm/) We used this resource to get a deeper understanding of Dijikstra's algorithm and how it works.
 * [dijikstras algorithm for a node with no path](https://stackoverflow.com/questions/27364193/dijikstras-algorithm-for-a-node-with-no-path) We used this to understand what happens when a node has no path when using Dijkstra’s Algorithm.
 * [std::unordered_map](https://en.cppreference.com/w/cpp/container/unordered_map) We used this in the Open Street Map. 
 * [std::cerr](https://cplusplus.com/reference/iostream/cerr/) We used this to display errors. 
-* [Definitive List of Common Reasons for Segmentation Faults](https://stackoverflow.com/questions/33047452/definitive-list-of-common-reasons-for-segmentation-faults) We ran into a segfault while testing and used this as a reference to see the cause of the issue. 
+* [Makefile: Error1](https://stackoverflow.com/questions/4034392/makefile-error1) We ran into error 1 when compiling our code with the make file, so we used this to do some more research. 
 * [C++ Program to Create an Interface](https://www.geeksforgeeks.org/cpp-program-to-create-an-interface/) We used this to understand what an interface is.
 * Path Router and part of transportation planner provided in discussion by Professor Nitta. 
 
@@ -142,25 +142,37 @@ for (auto it = objects.rbegin(); it != objects.rend(); ++it) {
 These are the common ways to loop through objects in a vector using a for loop in C++. Choose the one that best fits your requirements and coding style.
 
 ### Prompt 5
-What are the differences between a .h file and an abstract interface file in c++?
+How do you create std::pair in C++?
 
 ### Response 5
-In C++, header files (typically with a ".h" extension) and abstract interfaces serve different purposes, though they can be related in certain contexts. Here are the key differences:
+In C++, you can create a std::pair using its constructor or using the std::make_pair function. Here's how to do it:
 
-Purpose:
+Using the constructor:
+#include <iostream>
+#include <utility> // for std::pair
 
-Header files (.h): Header files are used to declare the interface to functions, classes, variables, and other declarations that are defined in corresponding source files (usually ".cpp" files). They provide a way to share declarations between different source files and enable modular programming.
-Abstract interface files: Abstract interfaces define a contract that classes must adhere to if they claim to implement the interface. They are used to achieve abstraction and polymorphism by allowing different classes to implement the same interface while providing their own implementations for the methods defined in the interface.
-Content:
+int main() {
+    // Creating a pair of int and double
+    std::pair<int, double> myPair(10, 3.14);
 
-Header files (.h): Typically contain function prototypes, constant definitions, type definitions, and other declarations necessary for using the functionality provided by a library or module.
-Abstract interface files: Define a set of methods or functions that a class must implement without specifying how those methods are implemented. They do not contain the actual implementation of the methods, only their declarations.
-Implementation:
+    // Accessing elements of the pair
+    std::cout << "First element: " << myPair.first << std::endl;
+    std::cout << "Second element: " << myPair.second << std::endl;
 
-Header files (.h): Usually paired with corresponding source files (.cpp) that contain the actual implementation of the declarations in the header file.
-Abstract interface files: Implementing classes provide their own implementations for the methods defined in the interface. These implementations are separate from the interface definition.
-Usage:
+    return 0;
+}
+Using std::make_pair:
+#include <iostream>
+#include <utility> // for std::pair
 
-Header files (.h): Included in other source files to make the declarations available for use. They facilitate code reuse and modular development.
-Abstract interface files: Implemented by classes that intend to fulfill the contract defined by the interface. They provide a way to achieve polymorphism and abstraction in object-oriented programming.
-In C++, header files and abstract interfaces are both important concepts, but they serve different roles in the design and implementation of software systems. Header files facilitate modular programming and code reuse, while abstract interfaces enable polymorphism and abstraction in object-oriented design.
+int main() {
+    // Creating a pair of int and double using make_pair
+    auto myPair = std::make_pair(10, 3.14);
+
+    // Accessing elements of the pair
+    std::cout << "First element: " << myPair.first << std::endl;
+    std::cout << "Second element: " << myPair.second << std::endl;
+
+    return 0;
+}
+Both methods achieve the same result. The std::make_pair function is often preferred as it deduces the types of the arguments automatically, reducing the need for explicit type specification.
