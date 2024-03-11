@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="5" failures="0" disabled="0" errors="0" time="0" timestamp="2024-03-11T04:43:32.402" name="AllTests">
+  <testsuite name="KMLWriterTest" tests="5" failures="0" disabled="0" skipped="0" errors="0" time="0" timestamp="2024-03-11T04:43:32.402">
+    <testcase name="SimpleTest" file="./testsrc/KMLTest.cpp" line="7" status="run" result="completed" time="0" timestamp="2024-03-11T04:43:32.402" classname="KMLWriterTest" />
+    <testcase name="PointStyleTest" file="./testsrc/KMLTest.cpp" line="22" status="run" result="completed" time="0" timestamp="2024-03-11T04:43:32.402" classname="KMLWriterTest" />
+    <testcase name="LineStyleTest" file="./testsrc/KMLTest.cpp" line="44" status="run" result="completed" time="0" timestamp="2024-03-11T04:43:32.402" classname="KMLWriterTest" />
+    <testcase name="PointTest" file="./testsrc/KMLTest.cpp" line="67" status="run" result="completed" time="0" timestamp="2024-03-11T04:43:32.402" classname="KMLWriterTest" />
+    <testcase name="PathTest" file="./testsrc/KMLTest.cpp" line="101" status="run" result="completed" time="0" timestamp="2024-03-11T04:43:32.402" classname="KMLWriterTest" />
+  </testsuite>
+</testsuites>

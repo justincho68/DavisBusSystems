@@ -45,8 +45,23 @@ struct CBusSystemIndexer::SImplementation{
 
     //Constructor for SImplementation
     SImplementation(std::shared_ptr<CBusSystem> bussystem) {
+        DBusSystem = bussystem;
+        std::unordered_set<TNodeID> uniqueStopIDs;
+        for (size_t i = 0; i < DBusSystem->RouteCount(); ++i) {
+            auto route = DBusSystem->RouteByIndex(i);
+            DSortedRoutes.push_back(route);
+            for(size_t j = 0; j<route->StopCount(); ++j) {
+                auto stopID = route->GetStopID(j);
+                if (uniqueStopIDs.insert(stopID).second) {
+                    auto stop = DBusSystem->StopByIndex(stopID);
+                }
+            }
+        }
+        /*
         //Initialize DBusSystem to the the internal bussystem pointer
         DBusSystem = bussystem;
+        //Use an unordered set to track the unique stop IDs
+        std::unordered_set<TNodeID> uniqueStopIDs;
         //For loop will populate the DSortedStops and DNodeIDToStop
         //Loops through every route in the bus system
         for (size_t Index = 0; Index< DBusSystem->RouteCount(); Index++) {
@@ -88,6 +103,7 @@ struct CBusSystemIndexer::SImplementation{
                 }
             }
         }
+        */
     };
     
     std::size_t StopCount() const noexcept {

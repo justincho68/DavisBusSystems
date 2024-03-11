@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="3" failures="2" disabled="0" errors="0" time="0" timestamp="2024-03-11T04:43:35.472" name="AllTests">
+  <testsuite name="CSVBusSystemIndexer" tests="3" failures="2" disabled="0" skipped="0" errors="0" time="0" timestamp="2024-03-11T04:43:35.472">
+    <testcase name="SimpleTest" file="./testsrc/CSVBusSystemIndexerTest.cpp" line="9" status="run" result="completed" time="0" timestamp="2024-03-11T04:43:35.472" classname="CSVBusSystemIndexer" />
+    <testcase name="StopTest" file="./testsrc/CSVBusSystemIndexerTest.cpp" line="20" status="run" result="completed" time="0" timestamp="2024-03-11T04:43:35.472" classname="CSVBusSystemIndexer">
+      <failure message="./testsrc/CSVBusSystemIndexerTest.cpp:35&#x0A;Value of: bool(Stop1Index)&#x0A;  Actual: false&#x0A;Expected: true" type=""><![CDATA[./testsrc/CSVBusSystemIndexerTest.cpp:35
+Value of: bool(Stop1Index)
+  Actual: false
+Expected: true]]></failure>
+    </testcase>
+    <testcase name="RouteTest" file="./testsrc/CSVBusSystemIndexerTest.cpp" line="46" status="run" result="completed" time="0" timestamp="2024-03-11T04:43:35.472" classname="CSVBusSystemIndexer">
+      <failure message="./testsrc/CSVBusSystemIndexerTest.cpp:79&#x0A;Value of: BusSystemIndexer.RoutesByNodeIDs(101,102,Routes)&#x0A;  Actual: false&#x0A;Expected: true" type=""><![CDATA[./testsrc/CSVBusSystemIndexerTest.cpp:79
+Value of: BusSystemIndexer.RoutesByNodeIDs(101,102,Routes)
+  Actual: false
+Expected: true]]></failure>
+      <failure message="./testsrc/CSVBusSystemIndexerTest.cpp:80&#x0A;Expected equality of these values:&#x0A;  Routes.size()&#x0A;    Which is: 0&#x0A;  2" type=""><![CDATA[./testsrc/CSVBusSystemIndexerTest.cpp:80
+Expected equality of these values:
+  Routes.size()
+    Which is: 0
+  2]]></failure>
+      <failure message="./testsrc/CSVBusSystemIndexerTest.cpp:81&#x0A;Value of: Routes.find(Route1Index) != Routes.end()&#x0A;  Actual: false&#x0A;Expected: true" type=""><![CDATA[./testsrc/CSVBusSystemIndexerTest.cpp:81
+Value of: Routes.find(Route1Index) != Routes.end()
+  Actual: false
+Expected: true]]></failure>
+      <failure message="./testsrc/CSVBusSystemIndexerTest.cpp:82&#x0A;Value of: Routes.find(Route2Index) != Routes.end()&#x0A;  Actual: false&#x0A;Expected: true" type=""><![CDATA[./testsrc/CSVBusSystemIndexerTest.cpp:82
+Value of: Routes.find(Route2Index) != Routes.end()
+  Actual: false
+Expected: true]]></failure>
+    </testcase>
+  </testsuite>
+</testsuites>
