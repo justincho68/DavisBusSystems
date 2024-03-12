@@ -171,9 +171,15 @@ struct CDijkstraTransportationPlanner::SImplementation {
 
     // Returns true if the path description is created. Takes the trip steps path
     // and converts it into a human readable set of steps.
-    bool GetPathDescription(const std::vector<TTripStep> &path, std::vector<std::string> &desc) {
-        return true;
-    }
+    bool GetPathDescription(const std::vector< TTripStep > &path, std::vector< std::string > &desc) const override;
+
+    arg1 - std::vector<TTripStep> &path is a reference to a vector of TTripStep objects that each represent a step in a single route.
+
+    arg 2- std::vector<std::string> &desc is  reference to a vector of strings. This vector is used to store the descriptions of the trip steps in a readable way.
+
+    Return - returns a boolean value of true if the path description is successfully given and false otherwise.
+
+    Purpose - The purpose of this function is to provide clear and understandable descriptions of the required steps in a given path or route.
 
 };
 
