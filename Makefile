@@ -13,7 +13,7 @@ LDFLAGS = -lgtest -lgtest_main -lpthread -lexpat -lgmock
 
 all: directories runtests
 
-runtests: run_teststrutils run_teststrdatasource run_teststrdatasink run_testfiledatass run_testosm run_testkml run_testdpr run_testtpcl run_testtp run_testcsvbsi
+runtests: run_teststrutils run_teststrdatasource run_teststrdatasink run_testfiledatass run_testosm run_testkml run_testdpr run_testcsvbsi run_testtpcl run_testtp
 
 run_teststrutils: $(BIN_DIR)/teststrutils
 	$(BIN_DIR)/teststrutils --gtest_output=xml:$(TEST_TMP_DIR)/run_teststrutils
