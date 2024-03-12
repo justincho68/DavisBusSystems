@@ -32,11 +32,14 @@ struct CDijkstraPathRouter::SImplementation {
     }
 
     bool AddEdge(TVertexID src, TVertexID dest, double weight, bool bidir = false) noexcept {
+        if (weight <= 0.0) {
+            return false;
+        }
         //make sure source and destination are valid
-        if ((src < DVertices.size()) && (dest < DVertices.size()) && (0.0 <= weight)) {
+        if ((src < DVertices.size()) && (dest < DVertices.size()) && (weight >= 0.0)) {
             DVertices[src].DEdges.push_back(std::make_pair(weight,dest));
             if (bidir) {
-                DVertices[src].DEdges.push_back(std::make_pair(weight,src));
+                DVertices[dest].DEdges.push_back(std::make_pair(weight,src));
             }
             return true;
         }
@@ -48,6 +51,13 @@ struct CDijkstraPathRouter::SImplementation {
     }
 
     double FindShortestPath(TVertexID src, TVertexID dest, std::vector<TVertexID> &path) noexcept {
+        if (src >= DVertices.size() || dest >= DVertices.size()) {
+            return CPathRouter::NoPathExists;
+        }
+        if (DVertices.empty()) {
+            path.clear();
+            return CPathRouter::NoPathExists;
+        }
         std::vector<TVertexID> PendingVertices;
         std::vector<TVertexID> Previous(DVertices.size(), CPathRouter::InvalidVertexID);
         std::vector<double> Distances(DVertices.size(), CPathRouter::NoPathExists);

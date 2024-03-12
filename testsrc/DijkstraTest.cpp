@@ -11,7 +11,7 @@ TEST(DijkstraPathRouter, RouteTest) {
         //Returns standard any, must cast it to specific type
         EXPECT_EQ(Index,std::any_cast<std::size_t>(PathRouter.GetVertexTag(Vertices.back())));
     }
-    //EXPECT_EQ(6, PathRouter.VertexCount());
+    EXPECT_EQ(6, PathRouter.VertexCount());
     PathRouter.AddEdge(Vertices[0], Vertices[4],3);
     PathRouter.AddEdge(Vertices[4], Vertices[5],90);
     PathRouter.AddEdge(Vertices[5], Vertices[3],6);
@@ -42,19 +42,19 @@ TEST(DijkstraPathRouter, NegativeEdgeWeightsTest) {
     PathRouter.AddEdge(Vertices[2], Vertices[1],3);
     PathRouter.AddEdge(Vertices[1], Vertices[3],9);
     std::vector<CPathRouter::TVertexID> Route;
-    EXPECT_EQ(0.0,PathRouter.FindShortestPath(Vertices[2], Vertices[3],Route));
-    EXPECT_TRUE(Route.empty());
+    EXPECT_EQ(12,PathRouter.FindShortestPath(Vertices[2], Vertices[3],Route));
+    EXPECT_FALSE(Route.empty());
 }
 
 TEST(DijkstraPathRouter, EmptyTest) {
     CDijkstraPathRouter PathRouter;
-    //No requirement to increase in order, only that they are unique when added
-    std::vector<CPathRouter::TVertexID> Vertices;
     EXPECT_EQ(0, PathRouter.VertexCount());
     std::vector<CPathRouter::TVertexID> Route;
-    EXPECT_EQ(0.0,PathRouter.FindShortestPath(Vertices[2], Vertices[3],Route));
+    // Use invalid vertex IDs directly since no vertices are added.
+    EXPECT_EQ(CPathRouter::NoPathExists, PathRouter.FindShortestPath(0, 1, Route));
     EXPECT_TRUE(Route.empty());
 }
+
 
 TEST(DijkstraPathRouter, EdgeTest) {
     CDijkstraPathRouter PathRouter;

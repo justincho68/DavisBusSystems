@@ -126,7 +126,47 @@ struct CDijkstraTransportationPlanner::SImplementation {
     // Returns true if the path description is created. Takes the trip steps path
     // and converts it into a human readable set of steps.
     bool GetPathDescription(const std::vector<TTripStep> &path, std::vector<std::string> &desc) {
-        return true;
+        //First check to make sure that the path is not empty
+        if (path.empty()) {
+            return false;
+        } // path can not be described
+
+        //Iterate through every step in the path to describe it
+        for (const auto &step : path) {
+            //Each mode will have a mode of transportation and a node id
+            auto mode = step.first;
+            auto nodeID = step.second;
+            //Create a string to hold the mode of transportation
+            std::string modeDescription;
+            //Switch statements for each mode of transportation
+            switch (mode) {
+                case CTransportationPlanner::ETransportationMode::Walk:
+                    modeDescription = "Walk";
+                    break;
+                case CTransportationPlanner::ETransportationMode::Bike:
+                    modeDescription = "Bike";
+                    break;
+                case CTransportationPlanner::ETransportationMode::Bus:
+                    modeDescription = "Bus";
+                    break;
+                default:
+                    modeDescription = "Uninitialized";
+            } 
+            //find the correspoinding node in the map because the node id is given
+            auto nodeIt = DNodeToVertexID.find(nodeID);
+            //check to make sure it is not at the end
+            if (nodeIt != DNodeToVertexID.end()) {
+                auto nodeName = "Node " + std::to_string(nodeID);
+                //Create a description using the mode and node id
+                std::string description = modeDescription + " to " + nodeName;
+                desc.push_back(description);
+            } else {
+                //Error message if the node id can not be mapped to a node
+                desc.push_back("Unknown ID: " + std::to_string(nodeID));
+            }
+        }
+        //Return true if descriptions is non empty
+        return !desc.empty();
     }
 
 };

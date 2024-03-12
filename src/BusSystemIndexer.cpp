@@ -53,29 +53,30 @@ struct CBusSystemIndexer::SImplementation{
 
     // Populate DStopIDToStop for direct access to stops by their ID
     for (size_t i = 0; i < DBusSystem->StopCount(); ++i) {
+        //Retrieve each bus stop using its index
         auto stop = DBusSystem->StopByIndex(i);
+        //Map each stop id to the stop object itself
         DStopIDToStop[stop->ID()] = stop;
-        // Also add to DSortedStops and DNodeIDToStop as they are needed for direct lookup
-        DSortedStops.push_back(stop);
-        DNodeIDToStop[stop->NodeID()] = stop;
+        DSortedStops.push_back(stop); // add to the vector of stops
+        DNodeIDToStop[stop->NodeID()] = stop; //map the stops nodeid to the stop object
     }
 
-    // Populate DSortedRoutes
+    // Populate DSortedRoutes with routes and create mappings
     for (size_t i = 0; i < DBusSystem->RouteCount(); ++i) {
-        auto route = DBusSystem->RouteByIndex(i);
-        DSortedRoutes.push_back(route);
-
+        auto route = DBusSystem->RouteByIndex(i); // retrieve bus route using index
+        DSortedRoutes.push_back(route); // add to the vector of routes
+        //create mapping pairs from stop pairs to their routes
         for (size_t j = 1; j < route->StopCount(); ++j) {
             CBusSystem::TStopID prevStopID = route->GetStopID(j - 1);
             CBusSystem::TStopID currStopID = route->GetStopID(j);
 
-            // Utilizing stops directly from DStopIDToStop ensures accuracy
-            auto prevStop = DStopIDToStop[prevStopID];
-            auto currStop = DStopIDToStop[currStopID];
+            auto prevStop = DStopIDToStop[prevStopID]; // get prev stop object using ID
+            auto currStop = DStopIDToStop[currStopID]; // get curr stop object using ID
 
             if (prevStop && currStop) {
+                //create a key from node ids of the stop pair
                 std::pair<TNodeID, TNodeID> key = {prevStop->NodeID(), currStop->NodeID()};
-                DSrcDestToRoutes[key].insert(route);
+                DSrcDestToRoutes[key].insert(route); // map stop pair to the route
             }
         }
     }
@@ -89,122 +90,6 @@ struct CBusSystemIndexer::SImplementation{
     std::sort(DSortedRoutes.begin(), DSortedRoutes.end(), [](const std::shared_ptr<SRoute>& a, const std::shared_ptr<SRoute>& b) {
         return a->Name() < b->Name();
     });
-        /*
-        if (!DBusSystem) {
-        throw std::runtime_error("BusSystem is null");
-    }
-
-    // Initialize DStopIDToStop for direct access to stops by their ID
-    for (size_t i = 0; i < DBusSystem->StopCount(); ++i) {
-        auto stop = DBusSystem->StopByIndex(i);
-        DStopIDToStop[stop->ID()] = stop;
-    }
-
-    // Populate DSortedStops and DSortedRoutes
-    std::unordered_set<TNodeID> uniqueNodeIDs;
-    for (size_t i = 0; i < DBusSystem->RouteCount(); ++i) {
-        auto route = DBusSystem->RouteByIndex(i);
-        DSortedRoutes.push_back(route);
-        for(size_t j = 0; j < route->StopCount(); ++j) {
-            CBusSystem::TStopID stopID = route->GetStopID(j);
-            if (uniqueNodeIDs.insert(stopID).second) { // If it's a new node ID
-                auto stop = DStopIDToStop[stopID]; // Use the populated map
-                if(stop) {
-                    DSortedStops.push_back(stop);
-                    DNodeIDToStop[stop->NodeID()] = stop;
-                }
-            }
-            // For each pair of consecutive stops, link their route
-            if (j > 0) {
-                CBusSystem::TStopID prevStopID = route->GetStopID(j-1);
-                auto prevStop = DStopIDToStop[prevStopID];
-                auto currStop = DStopIDToStop[stopID];
-                if(prevStop && currStop) {
-                    std::pair<TNodeID, TNodeID> key = {prevStop->NodeID(), currStop->NodeID()};
-                    DSrcDestToRoutes[key].insert(route);
-                }
-            }
-        }
-    }
-
-    // Sort DSortedStops by StopID
-    std::sort(DSortedStops.begin(), DSortedStops.end(), [](const std::shared_ptr<SStop>& a, const std::shared_ptr<SStop>& b) {
-        return a->ID() < b->ID();
-    });
-
-    // Sort DSortedRoutes by RouteName
-    std::sort(DSortedRoutes.begin(), DSortedRoutes.end(), [](const std::shared_ptr<SRoute>& a, const std::shared_ptr<SRoute>& b) {
-        return a->Name() < b->Name();
-    }); */
-        /*if (!DBusSystem) {
-            throw std::runtime_error("BusSystem is null");
-        }
-        for (size_t Index = 0; Index < DBusSystem->StopCount(); Index++) {
-            auto CurrentStop = DBusSystem->StopByIndex(Index);
-            DSortedStops.push_back(CurrentStop);
-            DNodeIDToStop[CurrentStop->NodeID()] = CurrentStop;
-        }
-        std::sort(DSortedStops.begin(), DSortedStops.end(), StopIDCompare);
-        for (size_t Index = 0; Index < DBusSystem->RouteCount(); Index++) {
-            auto CurrentRoute = DBusSystem->RouteByIndex(Index);
-            for(size_t StopIndex = 1; StopIndex < CurrentRoute->StopCount(); StopIndex++) {
-                auto SourceNodeID = DBusSystem->StopByID(CurrentRoute->GetStopID(StopIndex-1));
-                auto DestinationNodeID = DBusSystem->StopByID(CurrentRoute->GetStopID(StopIndex));
-                if (!SourceNodeID || !DestinationNodeID) continue;
-                auto SearchKey = std::make_pair(SourceNodeID->NodeID(), DestinationNodeID->NodeID());
-                auto Search = DSrcDestToRoutes.find(SearchKey);
-                if (Search != DSrcDestToRoutes.end()) {
-                    Search->second.insert(CurrentRoute);
-                }
-                else {
-                    DSrcDestToRoutes[SearchKey] = {CurrentRoute};
-                }
-            }
-        }
-        */
-        /*
-        DBusSystem = bussystem;
-        if (!DBusSystem) {
-            throw std::runtime_error("BusSystem is null");
-        }
-        std::unordered_set<TNodeID> uniqueStopIDs;
-        for (size_t routeIndex = 0; routeIndex < DBusSystem->RouteCount(); ++routeIndex) {
-            auto route = DBusSystem->RouteByIndex(routeIndex);
-            std::cout << "Processing Route: " << route->Name() << " with Stop Count: " << route->StopCount() << std::endl;
-            if (!route) {
-                std::cerr << "Failed to access route at index: " << routeIndex << std::endl;
-                continue;
-            }
-            DSortedRoutes.push_back(route);
-            for(size_t stopIndex = 0; stopIndex < route->StopCount(); ++stopIndex) {
-                TNodeID stopID = route->GetStopID(stopIndex);
-                std::cout << "Processing Stop ID: " << stopID << " for Route: " << route->Name() << std::endl;
-                if (uniqueStopIDs.insert(stopID).second) {
-                    auto stop = DBusSystem->StopByIndex(stopID);
-                    if (!stop) {
-                        std::cerr << "Stop with ID " << stopID << " could not be found withing the system." << std::endl;
-                        continue;
-                    }
-                    DSortedStops.push_back(stop);
-                    DNodeIDToStop[stopID] = stop;
-                    std::cout << "Added Stop ID: " << stop->ID() << " Node ID: " << stop->NodeID() << std::endl;
-                } 
-                if (stopIndex > 0) {
-                    TNodeID previousStopID = route->GetStopID(stopIndex-1);
-                    DSrcDestToRoutes[{previousStopID, stopID}].insert(route);
-                    std::cout << "Added Route between Stop IDs: " << previousStopID << " and " << stopID << std::endl;
-                }
-            }
-        }
-        std::sort(DSortedStops.begin(), DSortedStops.end(), [](const std::shared_ptr<SStop> &a, const std::shared_ptr<SStop> &b) {
-            return  a->ID() < b->ID();
-        });
-        std::cout << "Sorted " << DSortedStops.size() << " Stops.\n";
-        std::sort(DSortedRoutes.begin(), DSortedRoutes.end(), [](const std::shared_ptr<SRoute> &a, const std::shared_ptr<SRoute> &b) {
-            return a->Name() < b->Name();
-        });
-        std::cout << "Sorted " << DSortedRoutes.size() << " Routes.\n";
-    */
 };
 
     
@@ -218,14 +103,17 @@ struct CBusSystemIndexer::SImplementation{
     
     std::shared_ptr<SStop> StopByNodeID(TNodeID id) const noexcept {
         auto Search = DNodeIDToStop.find(id);
+        //Find the given stop using the id in parameter
         if(Search != DNodeIDToStop.end()) {
             return Search->second;
         }
+        //return null pointer if nothing is found
         return nullptr;
     }
 
     bool RouteByNodeIDs(TNodeID src, TNodeID dest, std::unordered_set<std::shared_ptr<SRoute>> &routesOut) {
         auto searchKey = std::make_pair(src, dest);
+        //use a pair of src and destination as a key in DSrcDestToRoutes
         auto search = DSrcDestToRoutes.find(searchKey);
         if (search != DSrcDestToRoutes.end()) {
             routesOut = search->second;
@@ -259,15 +147,15 @@ struct CBusSystemIndexer::SImplementation{
 
 
 };
-
+//Constructor
 CBusSystemIndexer::CBusSystemIndexer(std::shared_ptr<CBusSystem> bussystem) {
     DImplementation = std::make_unique<SImplementation>(bussystem);
 }
-
+//Destructor
 CBusSystemIndexer::~CBusSystemIndexer() {
 
 }
-
+//Call all of the functions on DImplementation which is an instance of SImplementation
 std::size_t CBusSystemIndexer::StopCount() const noexcept {
     return DImplementation->StopCount();
 }
@@ -277,6 +165,7 @@ std::size_t CBusSystemIndexer::RouteCount() const noexcept {
 }
 
 std::shared_ptr<CBusSystemIndexer::SStop> CBusSystemIndexer::SortedStopByIndex(std::size_t index) const noexcept {
+    //check that it is in bounds
     if (index < DImplementation->DSortedStops.size()) {
         return DImplementation->DSortedStops[index];
     }
@@ -289,6 +178,7 @@ std::shared_ptr<CBusSystemIndexer::SRoute> CBusSystemIndexer::SortedRouteByIndex
 
 std::shared_ptr<CBusSystemIndexer::SStop> CBusSystemIndexer::StopByNodeID(TNodeID id) const noexcept {
     auto it = DImplementation->DNodeIDToStop.find(id);
+    //check for valid bounds
     if (it != DImplementation->DNodeIDToStop.end()) {
         return it->second;
     }

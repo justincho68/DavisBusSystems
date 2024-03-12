@@ -13,7 +13,7 @@ LDFLAGS = -lgtest -lgtest_main -lpthread -lexpat -lgmock
 
 all: directories runtests
 
-runtests: run_teststrutils run_teststrdatasource run_teststrdatasink run_testfiledatass run_testosm run_testkml run_testtpcl run_testtp run_testdpr run_testcsvbsi
+runtests: run_teststrutils run_teststrdatasource run_teststrdatasink run_testfiledatass run_testosm run_testkml run_testdpr run_testtpcl run_testtp run_testcsvbsi
 
 run_teststrutils: $(BIN_DIR)/teststrutils
 	$(BIN_DIR)/teststrutils --gtest_output=xml:$(TEST_TMP_DIR)/run_teststrutils
@@ -161,8 +161,8 @@ $(OBJ_DIR)/DijkstraPathRouter.o: $(SRC_DIR)/DijkstraPathRouter.cpp $(INC_DIR)/Di
 $(OBJ_DIR)/DijkstraTest.o: $(TEST_SRC_DIR)/DijkstraTest.cpp $(INC_DIR)/DijkstraPathRouter.h
 	@$(CXX) -o $(OBJ_DIR)/DijkstraTest.o -c $(CXXFLAGS) $(TEST_SRC_DIR)/DijkstraTest.cpp
 
-#$(OBJ_DIR)/PathRouter.o: $(SRC_DIR)/DijkstraPathRouter.cpp $(INC_DIR)/PathRouter.h
-#	@$(CXX) -o $(OBJ_DIR)/PathRouter.o -c $(CXXFLAGS) $(SRC_DIR)/DijkstraPathRouter.cpp
+$(OBJ_DIR)/PathRouter.o: $(SRC_DIR)/DijkstraPathRouter.cpp $(INC_DIR)/PathRouter.h
+	@$(CXX) -o $(OBJ_DIR)/PathRouter.o -c $(CXXFLAGS) $(SRC_DIR)/DijkstraPathRouter.cpp
 
 $(BIN_DIR)/testdpr: $(OBJ_DIR)/DijkstraPathRouter.o $(OBJ_DIR)/DijkstraTest.o
 	@$(CXX) -o $(BIN_DIR)/testdpr $(OBJ_DIR)/DijkstraPathRouter.o $(OBJ_DIR)/DijkstraTest.o $(LDFLAGS)
