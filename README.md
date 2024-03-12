@@ -7,17 +7,16 @@ Student 2: Rachel Lin (919418893)
 The current status of this project is completed.
 
 ## Known Issues 
-This project should be functioning correctly. There are not any issues we know of.
+The DijkstraTransporationPlanner only passes the shortestpathtest. It runs into a segmentation fault. The TransporationPlannerCommandLine does not pass the save, print, or error tests. 
 
 ## Code References 
 * [std::make_pair](https://cplusplus.com/reference/utility/make_pair/) We used this link when writing the FastestPath for Transportation Planner for the TTripStep vector.
 * [What is Dijkstra’s Algorithm? | Introduction to Dijkstra’s Shortest Path Algorithm](https://www.geeksforgeeks.org/introduction-to-dijkstras-shortest-path-algorithm/) We used this resource to get a deeper understanding of Dijikstra's algorithm and how it works.
 * [dijikstras algorithm for a node with no path](https://stackoverflow.com/questions/27364193/dijikstras-algorithm-for-a-node-with-no-path) We used this to understand what happens when a node has no path when using Dijkstra’s Algorithm.
 * [std::unordered_map](https://en.cppreference.com/w/cpp/container/unordered_map) We used this in the Open Street Map. 
-* [std::cerr](https://cplusplus.com/reference/iostream/cerr/) We used this to display errors. 
+* [std::any_cast](https://en.cppreference.com/w/cpp/utility/any/any_cast) We used this for the transportation planner. 
 * [Makefile: Error1](https://stackoverflow.com/questions/4034392/makefile-error1) We ran into error 1 when compiling our code with the make file, so we used this to do some more research. 
-* [C++ Program to Create an Interface](https://www.geeksforgeeks.org/cpp-program-to-create-an-interface/) We used this to understand what an interface is.
-* Path Router and part of transportation planner provided in discussion by Professor Nitta. 
+* Path Router, Bus System Indexer, and part of transportation planner provided in discussion by Professor Nitta. 
 
 ## Generative AI Use 
 We used ChatGPT for prompts 1-5.

@@ -1,20 +1,9 @@
-#include "DijkstraPathRouter.h"
-#include "DijkstraTransportationPlanner.h"
-#include "TransportationPlannerConfig.h"
-#include "GeographicUtils.h"
-#include "BusSystemIndexer.h"
-#include <unordered_map>
-#include <iostream>
+CDijkstraTranportationPlanner is a class for computing transportation routes using Dijkstra's algorithm for different transportation methods of biking or walking/bussing. It finds and provides the fastest route and the shortest routes available. It also states the fastest transportation mode.
 
+
+In the SImplementation, it takes the street map and bus system and adds vertices to the different Path Routers for shortest path, biking fastest path, and walking/bussing fastest path. It finds the different speed limits for the different streets and uses them to calculate the time it takes to travel. It also uses Haversine distance formula to calculate the distance in miles for edges in the fastest path routers. Then, it calculates the time it takes for the different transportation methods in hours based on the walking speed, biking speed, and speed limits for the buses. 
+Parameter - std::shared_ptr<SConfiguration> config
 struct CDijkstraTransportationPlanner::SImplementation {
-    std::shared_ptr< CStreetMap > DStreetMap;
-    std::shared_ptr <CBusSystem> DBusSystem;
-    std::shared_ptr <CBusSystemIndexer> DBusSystemIndexer;
-    std::unordered_map< CStreetMap::TNodeID, CPathRouter::TVertexID > DNodeToVertexID;
-    CDijkstraPathRouter DShortestPathRouter;
-    CDijkstraPathRouter DFastestPathRouterBike;
-    CDijkstraPathRouter DFastestPathRouterWalkBus;
-    std::unordered_map< CStreetMap::TNodeID, CStreetMap::TNodeID> speedLimits;
 
     SImplementation(std::shared_ptr<SConfiguration> config) {
         //set map and bus system as the ones from config
@@ -106,10 +95,16 @@ struct CDijkstraTransportationPlanner::SImplementation {
         }
     }
     
+    This function finds the amount of nodes present in the street map. 
+    Return - number of nodes present 
+    Parameter - None
     std::size_t NodeCount() const noexcept {
         return DStreetMap->NodeCount();
     }
 
+    Parameter - Index Number
+    Return - Returns the node at the index in the street map or none if it does not exist
+    Purpose - To find the node at the index in Street Map
     std::shared_ptr<CStreetMap::SNode> SortedNodeByIndex(std::size_t index) const noexcept {
         if (index < DStreetMap->NodeCount()) {
             return DStreetMap->NodeByIndex(index);
@@ -117,9 +112,9 @@ struct CDijkstraTransportationPlanner::SImplementation {
         return nullptr;
     }
 
-    //Returns the distance in miles between the src and dest nodes of the 
-    //shortest path if one exists. NoPathExists is returned if no path exists.
-    //The nodes of the shortest path are filled in the path parameter
+    Parameter - src and dest nodes and path vector where the node IDs are filled in after running the function
+    Return - Returns the distance in miles between the src and dest nodes of the shortest path if one exists or NoPathExists
+    Purpose - The purpose of this function is to find the shortest path between the source and destination nodes and get the vector with the node IDs for the shortest path.
     double FindShortestPath(TNodeID src, TNodeID dest, std::vector<TNodeID> &path) {
         path.clear();
         std::vector <CPathRouter::TVertexID> ShortestPath; //create vector to collect vertexIDs for shortest path
@@ -129,17 +124,19 @@ struct CDijkstraTransportationPlanner::SImplementation {
         auto Distance = DShortestPathRouter.FindShortestPath(SourceVertexID, DestinationNodeID, ShortestPath);
         for (auto VertexID : ShortestPath) {
             //convert the vertexIDs to NodeIDs and fill the path parameter
-            path.push_back(std::any_cast<TNodeID>(DShortestPathRouter.GetVertexTag(VertexID))); 
-
+            if (VertexID)
+            {
+                path.push_back(std::any_cast<TNodeID>(DShortestPathRouter.GetVertexTag(VertexID))); 
+            }
+            
         }
         return Distance;
 
     }
 
-    // Returns the time in hours for the fastest path between the src and dest
-    // nodes of the if one exists. NoPathExists is returned if no path exists.
-    // The transportation mode and nodes of the fastest path are filled in the
-    // path parameter.
+    Parameter - source and destination nodes and vector TTripStep to fill in transporation mode and vertex ids
+    Return - Returns the time in hours for the fastest path between the src and dest nodes if path exists, else return NoPathExists
+    Purpose - The purpose of this function is to find the fastest path and transportation mode based on the source node and destination and return the time it takes for the specific fastest path. 
     double FindFastestPath(TNodeID src, TNodeID dest, std::vector<TTripStep> &path) {
         path.clear();
         auto SourceVertexID = DNodeToVertexID[src]; //get vertex id at src node
@@ -175,47 +172,7 @@ struct CDijkstraTransportationPlanner::SImplementation {
     // Returns true if the path description is created. Takes the trip steps path
     // and converts it into a human readable set of steps.
     bool GetPathDescription(const std::vector<TTripStep> &path, std::vector<std::string> &desc) {
-        //First check to make sure that the path is not empty
-        if (path.empty()) {
-            return false;
-        } // path can not be described
-
-        //Iterate through every step in the path to describe it
-        for (const auto &step : path) {
-            //Each mode will have a mode of transportation and a node id
-            auto mode = step.first;
-            auto nodeID = step.second;
-            //Create a string to hold the mode of transportation
-            std::string modeDescription;
-            //Switch statements for each mode of transportation
-            switch (mode) {
-                case CTransportationPlanner::ETransportationMode::Walk:
-                    modeDescription = "Walk";
-                    break;
-                case CTransportationPlanner::ETransportationMode::Bike:
-                    modeDescription = "Bike";
-                    break;
-                case CTransportationPlanner::ETransportationMode::Bus:
-                    modeDescription = "Bus";
-                    break;
-                default:
-                    modeDescription = "Uninitialized";
-            } 
-            //find the correspoinding node in the map because the node id is given
-            auto nodeIt = DNodeToVertexID.find(nodeID);
-            //check to make sure it is not at the end
-            if (nodeIt != DNodeToVertexID.end()) {
-                auto nodeName = "Node " + std::to_string(nodeID);
-                //Create a description using the mode and node id
-                std::string description = modeDescription + " to " + nodeName;
-                desc.push_back(description);
-            } else {
-                //Error message if the node id can not be mapped to a node
-                desc.push_back("Unknown ID: " + std::to_string(nodeID));
-            }
-        }
-        //Return true if descriptions is non empty
-        return !desc.empty();
+        return true;
     }
 
 };
